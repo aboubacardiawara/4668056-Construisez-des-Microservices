@@ -2,7 +2,9 @@ package com.ecommerce.micrommerce.web.controller.exercice;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -26,24 +28,24 @@ public class ProductController extends com.ecommerce.micrommerce.web.controller.
      * 
      * @return
      */
-    @GetMapping("/produits/marges")
-    public List<Integer> calculerMargeProduit() {
-        List<Integer> marges = listeProduits()
-                .stream()
-                .map((product) -> product.getPrixAchat() - product.getPrix())
-                .collect(Collectors.toList());
-
+    @GetMapping("/AdminProduits")
+    public Map<String, Integer> calculerMargeProduit() {
+        Map<String, Integer> marges = new HashMap<>();
+        listeProduits().stream().forEach(product -> {
+            int marge = Math.abs(product.getPrixAchat() - product.getPrix());
+            marges.put(product.toString(), marge);
+        });
         return marges;
     }
 
     @GetMapping("produits/asc")
     public List<Product> trierProdutsParOrdreAlphabetiqueCroissant() {
-        return trierProdutsParAlphabetiqueCroissant(true);
+        return productDao.findByOrderByNomAsc();
     }
 
     @GetMapping("produits/desc")
     public List<Product> trierProdutsParOrdreAlphabetiqueDecroissant() {
-        return trierProdutsParAlphabetiqueCroissant(false);
+        return productDao.findByOrderByNomDesc();
     }
 
     private List<Product> trierProdutsParAlphabetiqueCroissant(boolean ordreCroissant) {

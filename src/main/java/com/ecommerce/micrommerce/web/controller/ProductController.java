@@ -14,23 +14,23 @@ import java.util.List;
 @RestController
 public class ProductController {
 
-    private final ProductDao productDao;
+    protected final ProductDao productDao;
 
     public ProductController(ProductDao productDao) {
         this.productDao = productDao;
     }
 
-    @DeleteMapping (value = "/Produits/{id}")
+    @DeleteMapping(value = "/Produits/{id}")
     public void supprimerProduit(@PathVariable int id) {
         productDao.deleteById(id);
     }
 
-    @PutMapping (value = "/Produits")
+    @PutMapping(value = "/Produits")
     public void updateProduit(@RequestBody Product product) {
         productDao.save(product);
     }
 
-    //Récupérer la liste des produits
+    // Récupérer la liste des produits
     @GetMapping("/Produits")
     public List<Product> listeProduits() {
         return productDao.findAll();
@@ -39,7 +39,9 @@ public class ProductController {
     @GetMapping(value = "/Produits/{id}")
     public Product afficherUnProduit(@PathVariable int id) {
         Product produit = productDao.findById(id);
-        if(produit==null) throw new ProduitIntrouvableException("Le produit avec l'id " + id + " est INTROUVABLE. Écran Bleu si je pouvais.");
+        if (produit == null)
+            throw new ProduitIntrouvableException(
+                    "Le produit avec l'id " + id + " est INTROUVABLE. Écran Bleu si je pouvais.");
         return produit;
     }
 
