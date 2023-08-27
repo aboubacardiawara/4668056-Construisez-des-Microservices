@@ -1,5 +1,6 @@
 package com.ecommerce.micrommerce.web.controller.exercice;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -8,11 +9,18 @@ import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ecommerce.micrommerce.web.dao.ProductDao;
+import com.ecommerce.micrommerce.web.exceptions.exercice.ProduitGratuitException;
 import com.ecommerce.micrommerce.web.model.Product;
 
 @RestController("ProductController2")
@@ -48,17 +56,14 @@ public class ProductController extends com.ecommerce.micrommerce.web.controller.
         return productDao.findByOrderByNomDesc();
     }
 
-    private List<Product> trierProdutsParAlphabetiqueCroissant(boolean ordreCroissant) {
-        List<Product> produits = listeProduits();
-        produits.sort(new Comparator<Product>() {
-
-            @Override
-            public int compare(Product product1, Product product2) {
-                int resultatComparaison = product1.getNom().compareTo(product2.getNom());
-                return ordreCroissant ? resultatComparaison : -resultatComparaison;
-            }
-        });
-        return produits;
+    @Override
+    @PostMapping(value = "/Produits")
+    public ResponseEntity<Product> ajouterProduit(@RequestBody Product product) {
+        if (product.getPrix() == 0) {
+            throw new ProduitGratuitException(
+                    "Vous ne pouvez ajouter un produit gratuit. Ajouter un prix non nul");
+        }
+        return super.ajouterProduit(product);
     }
 
 }
